@@ -52,3 +52,104 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+############################
+# Build results
+############################
+
+bin/
+obj/
+out/
+artifacts/
+
+############################
+# Visual Studio
+############################
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+############################
+# Rider / JetBrains
+############################
+
+.idea/
+*.sln.iml
+
+############################
+# ASP.NET / .NET
+############################
+
+project.lock.json
+project.fragment.lock.json
+artifacts/
+TestResults/
+
+############################
+# Logs
+############################
+
+*.log
+logs/
+
+############################
+# OS generated files
+############################
+
+.DS_Store
+Thumbs.db
+
+############################
+# NuGet
+############################
+
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+############################
+# Environment files
+############################
+
+.env
+.env.*
+
+############################
+# Docker
+############################
+
+docker-compose.override.yml
+
+############################
+# Azure / Aspire temp files
+############################
+
+aspire-manifest.json
+aspire-state.json
+
+############################
+# Temporary files
+############################
+
+*.tmp
+*.temp
+*.cache
+*.pid
+
+############################
+# Publish output
+############################
+
+publish/
+
+############################
+# Coverage
+############################
+
+coverage/
+*.coverage
+*.coveragexml

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="AspireMessaging.AppHost/AspireMessaging.AppHost.csproj" />
+  <Project Path="AspireMessaging.Consumer/AspireMessaging.Consumer.csproj" />
+  <Project Path="AspireMessaging.Contracts/AspireMessaging.Contracts.csproj" />
+  <Project Path="AspireMessaging.Producer/AspireMessaging.Producer.csproj" />
+  <Project Path="AspireMessaging.ServiceDefaults/AspireMessaging.ServiceDefaults.csproj" />
+</Solution>
