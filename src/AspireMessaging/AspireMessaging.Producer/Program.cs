@@ -24,6 +24,25 @@ builder.Services.AddMassTransit(x =>
         // Optional: configure publish topology or exchange names, message conventions, etc.
         cfg.Message<InvoiceSubmitted>(m => m.SetEntityName("invoices-submitted-exchange"));
         cfg.Message<PaymentSubmitted>(m => m.SetEntityName("payments-submitted-exchange"));
+        cfg.Message<NotificationSubmitted>(m => m.SetEntityName("notifications-fanout-exchange"));
+
+        cfg.Publish<NotificationSubmitted>(p =>
+        {
+            p.ExchangeType = RabbitMQ.Client.ExchangeType.Fanout;
+            p.Durable = true;
+        });
+
+        cfg.Publish<InvoiceSubmitted>(p =>
+        {
+            p.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
+            p.Durable = true; // optional extras
+        });
+
+        cfg.Publish<PaymentSubmitted>(p =>
+        {
+            p.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
+            p.Durable = true; // optional extras
+        });
     });
 });
 
@@ -114,6 +133,37 @@ app.MapPost("/payments", async (PaymentDto paymentDto, IPublishEndpoint publishe
     catch (Exception ex)
     {
         logger.LogError(ex, "Failed to publish payment {PaymentId}", paymentId);
+        return Results.StatusCode(500);
+    }
+});
+
+// POST /notification
+app.MapPost("/notification", async (AspireMessaging.Producer.Dtos.NotificationDto notificationDto, IPublishEndpoint publisher, ILogger<Program> logger) =>
+{
+    var validationResults = new List<ValidationResult>();
+    var ctx = new ValidationContext(notificationDto);
+    if (!Validator.TryValidateObject(notificationDto, ctx, validationResults, true))
+    {
+        return Results.BadRequest(validationResults);
+    }
+
+    var message = new NotificationSubmitted(
+        NotificationId: notificationDto.NotificationId,
+        InvoiceId: notificationDto.InvoiceId,
+        PaymentId: notificationDto.PaymentId,
+        PaymentDate: notificationDto.PaymentDate,
+        Description: notificationDto.Description
+    );
+
+    try
+    {
+        await publisher.Publish<NotificationSubmitted>(message);
+        logger.LogInformation("Published NotificationSubmitted {NotificationId}", notificationDto.NotificationId);
+        return Results.Accepted($"/notification/{notificationDto.NotificationId}", new { notificationDto.NotificationId });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to publish notification {NotificationId}", notificationDto.NotificationId);
         return Results.StatusCode(500);
     }
 });
